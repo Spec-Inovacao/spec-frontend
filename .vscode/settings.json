@@ -1,0 +1,7 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "openspec": true,
+        "Push-Location": true,
+        "Pop-Location": true
+    }
+}
