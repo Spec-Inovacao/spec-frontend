@@ -46,6 +46,8 @@ nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
 .choose-button { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; color: var(--ink); cursor: pointer; font-size: 11px; min-height: 35px; padding: 0 14px; }
 .choose-button:hover, .service-card.selected .choose-button { border-color: var(--blue); color: var(--blue); }
 .availability-error { color: #ab3a3a; font-size: 11px; margin: 10px 0 0; }
+.availability-error button, .service-api-error button { background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; font-weight: 700; text-decoration: underline; }
+.configuration-error { background: #fff0f0; color: #a83c3c; font-size: 12px; margin: 12px auto; max-width: 1030px; padding: 11px 13px; }
 .loading { color: var(--muted); font-size: 12px; }
 .page-state { padding: 70px 0; }
 .success-panel { max-width: 700px; }
@@ -87,19 +89,24 @@ nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
 .schedule-layout { align-items: stretch; display: grid; gap: 22px; grid-template-columns: 355px minmax(0, 1fr); }
 .surface-card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
 .calendar-card { min-height: 367px; padding: 24px 24px 20px; }
-.calendar-month { color: var(--ink); font-size: 17px; margin: 0 0 22px; }
+.calendar-header { align-items: center; display: flex; justify-content: space-between; margin-bottom: 22px; }
+.calendar-month { color: var(--ink); font-size: 17px; margin: 0; text-transform: capitalize; }
+.calendar-month-control { align-items: center; background: transparent; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); cursor: pointer; display: inline-flex; font-size: 19px; height: 30px; justify-content: center; width: 30px; }
+.calendar-month-control:disabled { cursor: not-allowed; opacity: .4; }
 .weekday-header, .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
 .weekday-header { color: var(--muted); font-size: 9px; font-weight: 700; gap: 6px; margin-bottom: 8px; text-align: center; }
 .calendar-grid { gap: 8px 6px; }
 .calendar-day { aspect-ratio: 1; background: transparent; border: 0; border-radius: 7px; color: var(--ink); cursor: pointer; font-size: 12px; }
 .calendar-day:hover:not(:disabled), .calendar-day.selected { background: var(--blue-soft); color: var(--blue); font-weight: 700; }
 .calendar-day.disabled { color: #b8bfca; cursor: not-allowed; text-decoration: line-through; }
+.calendar-day-placeholder { aspect-ratio: 1; }
 .calendar-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 23px; }
 .ui-badge { border-radius: 5px; display: inline-flex; font-size: 10px; font-weight: 600; padding: 5px 8px; }
 .ui-badge-blue { background: var(--blue-soft); color: var(--blue); }
 .ui-badge-muted { background: #f0f2f5; color: var(--muted); }
 .calendar-help { color: var(--muted); font-size: 11px; margin: 17px 0 0; }
 .time-slots-card { display: flex; flex-direction: column; min-height: 367px; padding: 24px; }
+.schedule-empty { color: var(--muted); font-size: 12px; margin-top: 31px; }
 .schedule-card-title { color: var(--ink); font-size: 17px; margin: 0 0 6px; }
 .schedule-card-description { color: var(--muted); font-size: 12px; margin: 0; }
 .time-slot-grid { display: grid; gap: 11px 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 31px; }
@@ -108,7 +115,7 @@ nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
 .time-slot-occupied { background: #f1f3f6; border-color: #edf0f4; color: #b1b8c4; cursor: not-allowed; }
 .schedule-card-footer { display: flex; justify-content: flex-end; margin-top: auto; padding-top: 24px; }
 .schedule-card-footer .button { min-width: 180px; }
-.confirmation-page { max-width: 480px; }
+.confirmation-page { max-width: 540px; }
 .confirmation-page .page-heading { margin-bottom: 24px; }
 .confirmation-page .page-heading h1 { font-size: 30px; }
 .confirmation-page .page-heading > p:not(.eyebrow) { font-size: 13px; }
@@ -124,6 +131,12 @@ nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
 .cancellation-policy strong { color: var(--blue); display: block; font-size: 9px; letter-spacing: .06em; margin-bottom: 5px; }
 .cancellation-policy p { color: var(--muted); font-size: 11px; margin: 0; }
 .booking-summary-card .confirmation-actions { padding-top: 22px; }
+.customer-fields { border-bottom: 1px solid var(--line); display: grid; gap: 13px; padding: 20px 0; }
+.customer-fields h3 { color: var(--ink); font-size: 14px; margin: 0; }
+.customer-fields label { display: grid; gap: 6px; }
+.customer-fields label > span { color: var(--ink); font-size: 12px; font-weight: 600; }
+.customer-fields input { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; color: var(--ink); font-size: 13px; min-height: 40px; padding: 0 11px; width: 100%; }
+.customer-fields input:focus { outline: 3px solid rgba(49, 91, 216, .2); outline-offset: 2px; }
 .confirmation-error { background: #fff0f0; border-radius: 7px; color: #a83c3c; font-size: 12px; margin: 0 0 14px; padding: 11px 13px; }
 .confirmation-empty { text-align: left; }
 .confirmation-empty .button { margin-top: 4px; }
@@ -164,6 +177,7 @@ nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
   .footer { padding: 0 24px; }
   .schedule-page { margin-left: 24px; margin-right: 24px; }
   .appointments-page { margin-left: 24px; margin-right: 24px; }
+  .configuration-error { margin-left: 24px; margin-right: 24px; }
 }
 @media (max-width: 720px) {
   .topbar { flex-wrap: wrap; height: auto; padding-bottom: 12px; padding-top: 12px; }

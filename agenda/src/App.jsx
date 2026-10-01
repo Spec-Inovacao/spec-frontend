@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BookingFlow } from './components/BookingFlow.jsx'
 import { Footer } from './components/layout/Footer.jsx'
 import { Header } from './components/layout/Header.jsx'
@@ -8,16 +8,33 @@ import { MeusAgendamentos } from './pages/MeusAgendamentos.jsx'
 import { AgendaProprietario } from './pages/AgendaProprietario.jsx'
 import { ConfiguracoesProprietario } from './pages/ConfiguracoesProprietario.jsx'
 import { AdicionarAgendamento } from './pages/AdicionarAgendamento.jsx'
+import { buscarConfiguracao } from './services/configuracao.js'
 import './App.css'
 
 function App() {
   const [view, setView] = useState('booking')
   const [selectedService, setSelectedService] = useState(null)
   const [appointment, setAppointment] = useState(null)
-  const [cancellationHours, setCancellationHours] = useState(2)
+  const [configuration, setConfiguration] = useState(null)
+  const [configurationError, setConfigurationError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    buscarConfiguracao()
+      .then((result) => {
+        if (active) setConfiguration(result)
+      })
+      .catch((error) => {
+        if (active) setConfigurationError(error.message || 'Não foi possível carregar as configurações.')
+      })
+    return () => { active = false }
+  }, [])
+
+  const cancellationHours = Number(configuration?.cancelamentominhora) || 2
   function navigate(nextView) {
     if (nextView === 'servicos') {
-      setView('schedule')
+      setView('booking')
+      window.requestAnimationFrame(() => document.getElementById('servicos')?.scrollIntoView({ behavior: 'smooth' }))
       return
     }
     if (nextView === 'agendamentos') {
@@ -45,10 +62,11 @@ function App() {
   return (
     <main className="app-shell" id="inicio">
       <Header active={view === 'schedule' || view === 'confirmation' ? 'servicos' : view === 'appointments' ? 'agendamentos' : 'inicio'} onNavigate={navigate} />
-      {view === 'booking' && <BookingFlow onViewAppointments={() => setView('appointments')} onCancellationHours={setCancellationHours} onChooseService={chooseService} />}
-      {view === 'appointments' && <MeusAgendamentos onNewAppointment={() => navigate('servicos')} />}
-      {view === 'schedule' && <EscolherHorario service={selectedService} onContinue={continueToConfirmation} />}
-      {view === 'confirmation' && <ConfirmarAgendamento appointment={appointment} onBack={() => setView('schedule')} onConfirmed={finishConfirmation} onStart={() => setView('booking')} />}
+      {configurationError && <p className="configuration-error" role="alert">{configurationError}</p>}
+      {view === 'booking' && <BookingFlow configuration={configuration} onViewAppointments={() => setView('appointments')} onChooseService={chooseService} />}
+      {view === 'appointments' && <MeusAgendamentos configuration={configuration} onNewAppointment={() => navigate('servicos')} />}
+      {view === 'schedule' && <EscolherHorario configuration={configuration} service={selectedService} onContinue={continueToConfirmation} />}
+      {view === 'confirmation' && <ConfirmarAgendamento appointment={appointment} minimumHours={cancellationHours} onBack={() => setView('schedule')} onConfirmed={finishConfirmation} onStart={() => setView('booking')} />}
       {view === 'owner-agenda' && <AgendaProprietario onNavigate={navigate} />}
       {view === 'owner-settings' && <ConfiguracoesProprietario onNavigate={navigate} />}
       {view === 'owner-add' && <AdicionarAgendamento onNavigate={navigate} />}

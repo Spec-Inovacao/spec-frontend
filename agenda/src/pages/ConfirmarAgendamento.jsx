@@ -1,11 +1,24 @@
 import { useState } from 'react'
 import { BookingSummaryCard } from '../components/booking/BookingSummaryCard.jsx'
 import { Button } from '../components/ui/Button.jsx'
-import { confirmarAgendamento } from '../services/bookingService.js'
+import { criarAgendamento } from '../services/agendamentos.js'
+import { getSavedClient, saveClient } from '../services/clientStorage.js'
+import { criarUsuario } from '../services/usuarios.js'
 
-export function ConfirmarAgendamento({ appointment, onBack, onConfirmed, onStart }) {
+function sameCustomer(saved, customer) {
+  return saved
+    && saved.nome === customer.nome
+    && saved.email === customer.email
+    && saved.telefone === customer.telefone
+}
+
+export function ConfirmarAgendamento({ appointment, minimumHours, onBack, onConfirmed, onStart }) {
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState('')
+  const [customer, setCustomer] = useState(() => {
+    const saved = getSavedClient()
+    return { nome: saved?.nome || '', email: saved?.email || '', telefone: saved?.telefone || '' }
+  })
 
   if (!appointment) {
     return (
@@ -16,12 +29,37 @@ export function ConfirmarAgendamento({ appointment, onBack, onConfirmed, onStart
     )
   }
 
-  async function handleConfirm() {
+  function handleCustomerChange(event) {
+    const { name, value } = event.target
+    setCustomer((current) => ({ ...current, [name]: value }))
+  }
+
+  async function handleConfirm(event) {
+    event.preventDefault()
     setConfirming(true)
     setError('')
     try {
-      const confirmedBooking = await confirmarAgendamento(appointment)
-      onConfirmed(confirmedBooking)
+      const profile = {
+        nome: customer.nome.trim(),
+        email: customer.email.trim(),
+        telefone: customer.telefone.trim(),
+      }
+      let saved = getSavedClient()
+      if (!sameCustomer(saved, profile)) {
+        const created = await criarUsuario(profile)
+        const user = created?.data || created?.usuario || created
+        if (user?.id == null) throw new Error('A API não retornou o ID do cliente criado.')
+        saved = { id: user.id, ...profile }
+        saveClient(saved)
+      }
+      const payload = {
+        clienteId: saved.id,
+        servicoId: appointment.service.id,
+        dtInicio: appointment.dtInicio,
+        dtFim: appointment.dtFim,
+      }
+      const result = await criarAgendamento(payload)
+      onConfirmed({ ...appointment, ...(result?.data || result || {}), clienteId: saved.id })
     } catch (confirmationError) {
       setError(confirmationError.message || 'Não foi possível confirmar o agendamento.')
     } finally {
@@ -36,7 +74,9 @@ export function ConfirmarAgendamento({ appointment, onBack, onConfirmed, onStart
         <p>Revise os dados antes de reservar o horário.</p>
       </div>
       {error && <p className="confirmation-error" role="alert">{error}</p>}
-      <BookingSummaryCard booking={appointment} minimumHours={appointment.cancellationMinimumHours} onBack={onBack} onConfirm={handleConfirm} confirming={confirming} />
+      <form onSubmit={handleConfirm}>
+        <BookingSummaryCard booking={appointment} customer={customer} onCustomerChange={handleCustomerChange} minimumHours={minimumHours ?? appointment.cancellationMinimumHours} onBack={onBack} confirming={confirming} />
+      </form>
     </main>
   )
 }
