@@ -5,6 +5,9 @@ import { Header } from './components/layout/Header.jsx'
 import { ConfirmarAgendamento } from './pages/ConfirmarAgendamento.jsx'
 import { EscolherHorario } from './pages/EscolherHorario.jsx'
 import { MeusAgendamentos } from './pages/MeusAgendamentos.jsx'
+import { AgendaProprietario } from './pages/AgendaProprietario.jsx'
+import { ConfiguracoesProprietario } from './pages/ConfiguracoesProprietario.jsx'
+import { AdicionarAgendamento } from './pages/AdicionarAgendamento.jsx'
 import './App.css'
 
 function App() {
@@ -46,6 +49,9 @@ function App() {
       {view === 'appointments' && <MeusAgendamentos onNewAppointment={() => navigate('servicos')} />}
       {view === 'schedule' && <EscolherHorario service={selectedService} onContinue={continueToConfirmation} />}
       {view === 'confirmation' && <ConfirmarAgendamento appointment={appointment} onBack={() => setView('schedule')} onConfirmed={finishConfirmation} onStart={() => setView('booking')} />}
+      {view === 'owner-agenda' && <AgendaProprietario onNavigate={navigate} />}
+      {view === 'owner-settings' && <ConfiguracoesProprietario onNavigate={navigate} />}
+      {view === 'owner-add' && <AdicionarAgendamento onNavigate={navigate} />}
       <Footer cancellationHours={cancellationHours} />
     </main>
   )
