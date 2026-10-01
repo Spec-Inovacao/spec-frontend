@@ -10,7 +10,7 @@ export function Header({ active = 'inicio', onNavigate }) {
         <button className={`nav-link ${active === 'agendamentos' ? 'active' : ''}`} type="button" onClick={() => onNavigate('agendamentos')}>Meus agendamentos</button>
       </nav>
       <div className="header-actions">
-        <button className="owner-link" type="button" disabled>Área do proprietário</button>
+        <button className="owner-link" type="button" onClick={() => onNavigate('owner-agenda')}>Área do proprietário</button>
         <button className="header-cta" type="button" onClick={() => onNavigate('servicos')}>Agendar agora</button>
       </div>
     </header>
