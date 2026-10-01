@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { CalendarCard } from '../components/scheduling/CalendarCard.jsx'
 import { TimeSlotsCard } from '../components/scheduling/TimeSlotsCard.jsx'
-import { consultarDiasDisponiveis, consultarDisponibilidade, normalizarHorarios } from '../services/disponibilidade.js'
+import { consultarDiasDisponiveis, consultarDisponibilidade, extractCalendarData, normalizarHorarios } from '../services/disponibilidade.js'
 
 function localDate(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -39,21 +39,6 @@ function parseWorkingDays(value) {
     return day == null ? [] : [day]
   })
   return parsed.length ? new Set(parsed) : null
-}
-
-function extractCalendarData(payload) {
-  if (Array.isArray(payload)) {
-    const available = []
-    const closed = []
-    payload.forEach((item) => {
-      if (typeof item === 'object' && item !== null && (item.disponivel === false || item.status === 'fechado')) closed.push(item)
-      else available.push(item)
-    })
-    return { available, closed, hasAvailableList: true }
-  }
-  const available = payload?.diasDisponiveis || payload?.datasDisponiveis || payload?.dias || payload?.datas || null
-  const closed = payload?.diasFechados || payload?.datasFechadas || payload?.diasIndisponiveis || []
-  return { available: available || [], closed, hasAvailableList: Array.isArray(available) }
 }
 
 function makeCalendar(monthKey, availableValues, closedValues, hasAvailableList, workingDays) {
@@ -122,7 +107,7 @@ export function EscolherHorario({ configuration, service, onContinue }) {
       setSlots([])
       try {
         const payload = await consultarDiasDisponiveis(monthKey)
-        const data = extractCalendarData(payload)
+        const data = extractCalendarData(payload, monthKey)
         const nextCalendar = makeCalendar(monthKey, data.available, data.closed, data.hasAvailableList, parseWorkingDays(configuration?.diasatendimento))
         if (!active) return
         setCalendar(nextCalendar)

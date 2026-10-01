@@ -1,12 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { criarAgendamento, cancelarAgendamento, listarAgendamentos } from './agendamentos.js'
-import { consultarDisponibilidade, consultarDiasDisponiveis, normalizarHorarios } from './disponibilidade.js'
+import { consultarDisponibilidade, consultarDiasDisponiveis, extractCalendarData, normalizarHorarios } from './disponibilidade.js'
 import { buscarConfiguracao } from './configuracao.js'
 import { listarServicos } from './servicos.js'
 import { criarUsuario } from './usuarios.js'
 
 function response(payload, ok = true) {
   return { ok, json: async () => payload }
+}
+
+function pathOnly(url) {
+  return String(url).replace(/^https?:\/\/[^/]+/, '')
 }
 
 describe('serviços REST', () => {
@@ -25,13 +29,25 @@ describe('serviços REST', () => {
     await consultarDiasDisponiveis('2026-10')
     await listarAgendamentos(12)
 
-    expect(fetch.mock.calls.map(([url]) => url)).toEqual([
+    expect(fetch.mock.calls.map(([url]) => pathOnly(url))).toEqual([
       '/api/Servicos',
       '/api/admin/Configuracao',
       '/api/Disponibilidade?servicoId=7&data=2026-10-01',
-      '/api/Disponibilidade/dias?mes=2026-10',
+      '/api/Disponibilidade/dias?mes=10',
       '/api/Agendamentos?clienteId=12',
     ])
+  })
+
+  it('normaliza dias abertos e fechados no formato da API', () => {
+    expect(extractCalendarData([
+      'Qui 1 fechado',
+      'Sex 2 aberto',
+      'Sáb 3 aberto',
+    ], '2026-10')).toEqual({
+      available: ['2026-10-02', '2026-10-03'],
+      closed: ['2026-10-01'],
+      hasAvailableList: true,
+    })
   })
 
   it('envia payloads JSON e cancela com PATCH', async () => {
@@ -42,11 +58,11 @@ describe('serviços REST', () => {
     await criarAgendamento(appointment)
     await cancelarAgendamento(31)
 
-    expect(fetch.mock.calls[0][0]).toBe('/api/Usuarios')
+    expect(pathOnly(fetch.mock.calls[0][0])).toBe('/api/Usuarios')
     expect(fetch.mock.calls[0][1]).toMatchObject({ method: 'POST', body: JSON.stringify(customer) })
-    expect(fetch.mock.calls[1][0]).toBe('/api/Agendamentos')
+    expect(pathOnly(fetch.mock.calls[1][0])).toBe('/api/Agendamentos')
     expect(fetch.mock.calls[1][1]).toMatchObject({ method: 'POST', body: JSON.stringify(appointment) })
-    expect(fetch.mock.calls[2]).toEqual(['/api/Agendamentos/31/cancelar', { headers: {}, method: 'PATCH' }])
+    expect([pathOnly(fetch.mock.calls[2][0]), fetch.mock.calls[2][1]]).toEqual(['/api/Agendamentos/31/cancelar', { headers: {}, method: 'PATCH' }])
   })
 
   it('normaliza e bloqueia horários indisponíveis', () => {

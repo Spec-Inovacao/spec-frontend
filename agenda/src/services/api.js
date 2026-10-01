@@ -13,7 +13,10 @@ export async function request(path, options = {}) {
   })
   const payload = await response.json().catch(() => null)
   if (!response.ok) {
-    throw new Error(payload?.message || payload?.error || 'Não foi possível concluir a operação')
+    const validation = payload?.errors && typeof payload.errors === 'object'
+      ? Object.values(payload.errors).flat().filter(Boolean).join(' ')
+      : ''
+    throw new Error(payload?.message || payload?.error || payload?.title || validation || 'Não foi possível concluir a operação')
   }
   return payload
 }
