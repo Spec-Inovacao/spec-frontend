@@ -7,5 +7,7 @@ export function formatAppointmentTime(appointment) {
 }
 
 export function formatCancellationMessage(appointment) {
-  return appointment.cancellation.message
+  if (appointment.cancellation?.message) return appointment.cancellation.message
+  if (appointment.podeCancelar === true) return 'Cancelamento disponível dentro do prazo permitido.'
+  return `Cancelamento bloqueado. É necessário cancelar com antecedência mínima de ${appointment.minimumHours || 2} h.`
 }

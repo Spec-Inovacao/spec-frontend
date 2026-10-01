@@ -4,15 +4,15 @@ import { CalendarGrid } from './CalendarGrid.jsx'
 import { SelectionBadge } from './SelectionBadge.jsx'
 import { WeekdayHeader } from './WeekdayHeader.jsx'
 
-export function CalendarCard({ month, weeks, selectedDay, disabledDays, onDateSelect }) {
+export function CalendarCard({ month, monthKey, weeks, selectedDay, disabledDays, onDateSelect, onMonthChange, canGoPrevious }) {
   return (
     <Card className="calendar-card">
-      <CalendarHeader month={month} />
+      <CalendarHeader month={month} onMonthChange={onMonthChange} canGoPrevious={canGoPrevious} />
       <WeekdayHeader />
-      <CalendarGrid weeks={weeks} selectedDay={selectedDay} disabledDays={disabledDays} onDateSelect={onDateSelect} />
+      <CalendarGrid month={month} weeks={weeks} selectedDay={selectedDay} disabledDays={disabledDays} onDateSelect={onDateSelect} />
       <div className="calendar-badges">
-        <SelectionBadge>Qua {selectedDay} selecionado</SelectionBadge>
-        <SelectionBadge tone="muted">Dom 20 fechado</SelectionBadge>
+        {selectedDay && <SelectionBadge>{new Date(`${monthKey}-${String(selectedDay).padStart(2, '0')}T12:00:00`).toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric' })} selecionado</SelectionBadge>}
+        <SelectionBadge tone="muted">Dias sem expediente fechados</SelectionBadge>
       </div>
       <p className="calendar-help">Dias sem expediente ficam indisponíveis.</p>
     </Card>
