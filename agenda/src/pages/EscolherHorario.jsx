@@ -157,8 +157,8 @@ export function EscolherHorario({ configuration, service, onContinue }) {
       date: selectedDate,
       dateLabel: new Date(`${selectedDate}T12:00:00`).toLocaleDateString('pt-BR', { dateStyle: 'full' }),
       slot: { start: selectedTime, end: timeFromDate(end), label: selectedTime },
-      dtInicio: start.toISOString(),
-      dtFim: end.toISOString(),
+      dtInicio: `${selectedDate}T${selectedTime}:00`,
+      dtFim: `${selectedDate}T${timeFromDate(end)}:00`,
       cancellationMinimumHours: Number(configuration?.cancelamentominhora) || 2,
     })
   }

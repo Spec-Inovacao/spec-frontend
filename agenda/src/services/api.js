@@ -4,13 +4,18 @@ const apiBaseUrl = configuredBaseUrl.endsWith('/api')
   : `${configuredBaseUrl}/api`
 
 export async function request(path, options = {}) {
-  const response = await fetch(`${apiBaseUrl}${path}`, {
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-  })
+  let response
+  try {
+    response = await fetch(`${apiBaseUrl}${path}`, {
+      ...options,
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...options.headers,
+      },
+    })
+  } catch {
+    throw new Error('Não foi possível conectar à API. Verifique a conexão ou se o serviço está disponível.')
+  }
   const payload = await response.json().catch(() => null)
   if (!response.ok) {
     const validation = payload?.errors && typeof payload.errors === 'object'

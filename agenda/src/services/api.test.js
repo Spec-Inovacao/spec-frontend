@@ -52,7 +52,7 @@ describe('serviços REST', () => {
 
   it('envia payloads JSON e cancela com PATCH', async () => {
     const customer = { nome: 'Ana', email: 'ana@example.com', telefone: '11999990000' }
-    const appointment = { clienteId: 12, servicoId: 7, dtInicio: '2026-10-01T10:00:00.000Z', dtFim: '2026-10-01T10:30:00.000Z' }
+    const appointment = { clienteId: 12, servicoId: 7, dtInicio: '2026-10-01T10:00:00.000Z' }
 
     await criarUsuario(customer)
     await criarAgendamento(appointment)
@@ -63,6 +63,11 @@ describe('serviços REST', () => {
     expect(pathOnly(fetch.mock.calls[1][0])).toBe('/api/Agendamentos')
     expect(fetch.mock.calls[1][1]).toMatchObject({ method: 'POST', body: JSON.stringify(appointment) })
     expect([pathOnly(fetch.mock.calls[2][0]), fetch.mock.calls[2][1]]).toEqual(['/api/Agendamentos/31/cancelar', { headers: {}, method: 'PATCH' }])
+  })
+
+  it('explica falha de rede sem expor Failed to fetch', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')))
+    await expect(listarServicos()).rejects.toThrow('Não foi possível conectar à API')
   })
 
   it('normaliza e bloqueia horários indisponíveis', () => {
