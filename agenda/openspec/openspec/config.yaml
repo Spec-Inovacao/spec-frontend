@@ -1,32 +1,30 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  Tech stack: React 19, Vite, Express (API local do cliente), Vitest, ESLint.
+  Domínio: Agenda Fácil — fluxo do cliente e área do proprietário.
+  Integração remota: API em VITE_API_URL / VITE_OWNER_API_URL (contratos REST do backend Spec).
+  Commits: Conventional Commits (feat:, fix:, test:, docs:, chore:).
+  Git: trabalhar em branch de feature; não commitar .env nem secrets.
+  PR: abrir com gh pr create contra main, com Summary + Test plan.
+  Qualidade: antes de commit de entrega, preferir npm run lint, npm test e npm run build em agenda/.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  tasks:
+    - Incluir checkpoints de verificação (lint/test/build quando fizer sentido) e commits convencionais por fatia entregável.
+    - Cada task deve ser verificável; evitar tarefas vagamente “implementar tudo”.
+    - Quando a mudança for entregável ao time, a última fatia deve prever push e abertura de PR.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+operations:
+  apply:
+    guidance:
+      - Ao concluir uma fatia que as tasks marquem com commit, criar o commit convencional imediatamente (sem pedir confirmação extra).
+      - Não incluir .env, credenciais ou arquivos ignorados no commit.
+      - Se lint/test/build forem exigidos na task e falharem, corrigir antes de commitar; não marcar a task como feita.
+      - Ao concluir todas as tasks do change (ou quando o usuário pedir entrega), fazer push da branch e abrir/atualizar PR com gh (base main), devolvendo a URL.
+      - Se push/PR falhar por auth, rede ou proxy (ex.: Zscaler), reportar o bloqueio e os comandos exatos para o usuário rodar no terminal.
+      - Pausar apenas em dúvida de requisito, conflito de design ou bloqueio externo — não para perguntar se pode commitar/abrir PR quando as tasks já pedem isso.
+  archive:
+    guidance:
+      - Antes de arquivar, confirmar que a implementação foi entregue (PR aberta ou mergeada, conforme o estado do repositório).
+      - Resumir o resultado do archive em poucas linhas para o usuário.
