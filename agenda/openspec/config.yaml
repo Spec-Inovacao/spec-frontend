@@ -18,13 +18,17 @@ rules:
 operations:
   apply:
     guidance:
-      - Ao concluir uma fatia que as tasks marquem com commit, criar o commit convencional imediatamente (sem pedir confirmação extra).
-      - Não incluir .env, credenciais ou arquivos ignorados no commit.
-      - Se lint/test/build forem exigidos na task e falharem, corrigir antes de commitar; não marcar a task como feita.
-      - Ao concluir todas as tasks do change (ou quando o usuário pedir entrega), fazer push da branch e abrir/atualizar PR com gh (base main), devolvendo a URL.
-      - Se push/PR falhar por auth, rede ou proxy (ex.: Zscaler), reportar o bloqueio e os comandos exatos para o usuário rodar no terminal.
-      - Pausar apenas em dúvida de requisito, conflito de design ou bloqueio externo — não para perguntar se pode commitar/abrir PR quando as tasks já pedem isso.
+      [
+        "Ao concluir uma fatia que as tasks marquem com commit, criar o commit convencional imediatamente (sem pedir confirmação extra).",
+        "Não incluir .env, credenciais ou arquivos ignorados no commit.",
+        "Se lint/test/build forem exigidos na task e falharem, corrigir antes de commitar; não marcar a task como feita.",
+        "Ao concluir todas as tasks do change (ou quando o usuário pedir entrega), fazer push da branch e abrir/atualizar PR com gh (base main), devolvendo a URL.",
+        "Se push/PR falhar por auth, rede ou proxy (ex.: Zscaler), reportar o bloqueio e os comandos exatos para o usuário rodar no terminal.",
+        "Pausar apenas em dúvida de requisito, conflito de design ou bloqueio externo — não para perguntar se pode commitar/abrir PR quando as tasks já pedem isso."
+      ]
   archive:
     guidance:
-      - Antes de arquivar, confirmar que a implementação foi entregue (PR aberta ou mergeada, conforme o estado do repositório).
-      - Resumir o resultado do archive em poucas linhas para o usuário.
+      [
+        "Antes de arquivar, confirmar que a implementação foi entregue (PR aberta ou mergeada, conforme o estado do repositório).",
+        "Resumir o resultado do archive em poucas linhas para o usuário."
+      ]
