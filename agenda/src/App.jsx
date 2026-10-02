@@ -20,9 +20,12 @@ function App() {
 
   useEffect(() => {
     let active = true
+    setConfigurationError('')
     buscarConfiguracao()
       .then((result) => {
-        if (active) setConfiguration(result)
+        if (!active) return
+        setConfiguration(result)
+        setConfigurationError('')
       })
       .catch((error) => {
         if (active) setConfigurationError(error.message || 'Não foi possível carregar as configurações.')
@@ -62,7 +65,29 @@ function App() {
   return (
     <main className="app-shell" id="inicio">
       <Header active={view === 'schedule' || view === 'confirmation' ? 'servicos' : view === 'appointments' ? 'agendamentos' : 'inicio'} onNavigate={navigate} />
-      {configurationError && <p className="configuration-error" role="alert">{configurationError}</p>}
+      {configurationError && (
+        <p className="configuration-error" role="alert">
+          {configurationError}
+          {' '}
+          <button
+            type="button"
+            className="configuration-error-retry"
+            onClick={() => {
+              setConfigurationError('')
+              buscarConfiguracao()
+                .then((result) => {
+                  setConfiguration(result)
+                  setConfigurationError('')
+                })
+                .catch((error) => {
+                  setConfigurationError(error.message || 'Não foi possível carregar as configurações.')
+                })
+            }}
+          >
+            Tentar novamente
+          </button>
+        </p>
+      )}
       {view === 'booking' && <BookingFlow configuration={configuration} onViewAppointments={() => setView('appointments')} onChooseService={chooseService} />}
       {view === 'appointments' && <MeusAgendamentos configuration={configuration} onNewAppointment={() => navigate('servicos')} />}
       {view === 'schedule' && <EscolherHorario configuration={configuration} service={selectedService} onContinue={continueToConfirmation} />}

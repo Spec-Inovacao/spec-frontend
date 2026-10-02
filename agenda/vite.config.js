@@ -10,7 +10,10 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:3001',
+      '/api': {
+        target: 'https://spec-backend-l8rd.onrender.com',
+        changeOrigin: true,
+      },
     },
   },
 })

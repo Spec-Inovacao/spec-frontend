@@ -56,7 +56,6 @@ export function ConfirmarAgendamento({ appointment, minimumHours, onBack, onConf
         clienteId: saved.id,
         servicoId: appointment.service.id,
         dtInicio: appointment.dtInicio,
-        dtFim: appointment.dtFim,
       }
       const result = await criarAgendamento(payload)
       onConfirmed({ ...appointment, ...(result?.data || result || {}), clienteId: saved.id })

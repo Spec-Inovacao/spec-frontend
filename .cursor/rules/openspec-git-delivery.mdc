@@ -1,0 +1,22 @@
+---
+description: Automatiza commit, push e PR no fluxo OpenSpec (apply/entrega)
+alwaysApply: true
+---
+
+# OpenSpec → entrega Git
+
+Quando o usuário estiver em fluxo OpenSpec (`openspec apply`, `opsx apply`, implementar change, ou pedir para entregar/subir o trabalho do change):
+
+1. **Implementar** as tasks pendentes do change e marcar checkboxes ao concluir cada uma.
+2. **Commitar** sem pedir permissão extra quando a task ou a orientação do `openspec/config.yaml` pedirem commit:
+   - Conventional Commits (`feat:`, `fix:`, `test:`, `docs:`, `chore:`)
+   - Escopo mínimo e coerente com a fatia
+   - Nunca incluir `.env`, secrets ou credenciais
+3. **Qualidade**: se a task exigir `lint` / `test` / `build`, só commitar depois de passar.
+4. **Entrega**: ao terminar as tasks do change (ou sob pedido explícito de subir/entregar):
+   - `git push -u origin HEAD` (criar branch de feature se ainda estiver em `main`)
+   - Abrir ou atualizar PR com `gh pr create` / `gh pr view` (base `main`)
+   - Devolver a URL da PR
+5. **Bloqueios** (auth GitHub, Zscaler, permissão): não inventar workaround destrutivo; explicar o erro e passar os comandos para o terminal do usuário.
+
+Fora do fluxo OpenSpec, continuar pedindo confirmação antes de commit/PR, salvo pedido explícito do usuário.

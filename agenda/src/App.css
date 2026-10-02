@@ -1,6 +1,22 @@
 .app-shell { min-height: 100vh; background: var(--canvas); }
 .topbar { align-items: center; background: var(--surface); border-bottom: 1px solid #e8ebf0; display: flex; height: 64px; justify-content: space-between; padding: 0 max(56px, calc((100% - 1030px) / 2)); }
-.brand { align-items: center; color: var(--ink); display: flex; gap: 9px; text-decoration: none; white-space: nowrap; }
+.brand {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  gap: 9px;
+  padding: 0;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.brand:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
 .brand-mark { align-items: center; background: var(--blue); border-radius: 6px; color: white; display: inline-flex; font-size: 14px; font-weight: 700; height: 26px; justify-content: center; width: 26px; }
 .brand strong { font-size: 15px; font-weight: 700; }
 nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
@@ -48,6 +64,7 @@ nav { display: flex; gap: 6px; margin-left: auto; margin-right: 28px; }
 .availability-error { color: #ab3a3a; font-size: 11px; margin: 10px 0 0; }
 .availability-error button, .service-api-error button { background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; font-weight: 700; text-decoration: underline; }
 .configuration-error { background: #fff0f0; color: #a83c3c; font-size: 12px; margin: 12px auto; max-width: 1030px; padding: 11px 13px; }
+.configuration-error-retry { background: none; border: 0; color: #a83c3c; cursor: pointer; font: inherit; font-weight: 700; padding: 0; text-decoration: underline; }
 .loading { color: var(--muted); font-size: 12px; }
 .page-state { padding: 70px 0; }
 .success-panel { max-width: 700px; }
