@@ -17,10 +17,10 @@ function App() {
   const [appointment, setAppointment] = useState(null)
   const [configuration, setConfiguration] = useState(null)
   const [configurationError, setConfigurationError] = useState('')
+  const [scrollToServices, setScrollToServices] = useState(false)
 
   useEffect(() => {
     let active = true
-    setConfigurationError('')
     buscarConfiguracao()
       .then((result) => {
         if (!active) return
@@ -37,17 +37,20 @@ function App() {
   function navigate(nextView) {
     if (nextView === 'servicos') {
       setView('booking')
-      window.requestAnimationFrame(() => document.getElementById('servicos')?.scrollIntoView({ behavior: 'smooth' }))
+      setScrollToServices(true)
       return
     }
     if (nextView === 'agendamentos') {
+      setScrollToServices(false)
       setView('appointments')
       return
     }
+    setScrollToServices(false)
     setView(nextView === 'inicio' ? 'booking' : nextView)
   }
 
   function chooseService(service) {
+    setScrollToServices(false)
     setSelectedService(service)
     setView('schedule')
   }
@@ -88,7 +91,15 @@ function App() {
           </button>
         </p>
       )}
-      {view === 'booking' && <BookingFlow configuration={configuration} onViewAppointments={() => setView('appointments')} onChooseService={chooseService} />}
+      {view === 'booking' && (
+        <BookingFlow
+          configuration={configuration}
+          scrollToServices={scrollToServices}
+          onScrolledToServices={() => setScrollToServices(false)}
+          onViewAppointments={() => setView('appointments')}
+          onChooseService={chooseService}
+        />
+      )}
       {view === 'appointments' && <MeusAgendamentos configuration={configuration} onNewAppointment={() => navigate('servicos')} />}
       {view === 'schedule' && <EscolherHorario configuration={configuration} service={selectedService} onContinue={continueToConfirmation} />}
       {view === 'confirmation' && <ConfirmarAgendamento appointment={appointment} minimumHours={cancellationHours} onBack={() => setView('schedule')} onConfirmed={finishConfirmation} onStart={() => setView('booking')} />}

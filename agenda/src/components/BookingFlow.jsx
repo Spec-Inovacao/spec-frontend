@@ -11,7 +11,7 @@ function formatCurrency(value) {
   return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-export function BookingFlow({ configuration, onViewAppointments, onChooseService }) {
+export function BookingFlow({ configuration, scrollToServices = false, onScrolledToServices, onViewAppointments, onChooseService }) {
   const [services, setServices] = useState([])
   const [availability, setAvailability] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -49,6 +49,15 @@ export function BookingFlow({ configuration, onViewAppointments, onChooseService
     loadHome()
     return () => { active = false }
   }, [retry])
+
+  useEffect(() => {
+    if (loading || !scrollToServices) return
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById('servicos')?.scrollIntoView({ behavior: 'smooth' })
+      onScrolledToServices?.()
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [loading, scrollToServices, onScrolledToServices])
 
   if (loading) return <p className="loading page-state">Carregando agenda...</p>
 
